@@ -1,0 +1,38 @@
+TAREA 1:
+
+Primero tenemos que crear un entorno de python3 e instalar las dependencias necsarias. Para eso haremos lo siguiente:
+    -Instalamos python3-venv
+    -Creamos el entorno virtual: python3 -m venv env
+    -Activamos el entorno virtual: source env/bin/activate
+    -Ahora hay que instalar los requirements: pip install -r requirements.txt
+
+Para comprobar que vamos a trabajar con una base de datos sqlite miramos en django_tutorial\settings.py :
+    DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
+
+    Vemos que la base de datos que vamos a crear es sqlite
+
+
+El siguiente paso, como en los anteriores proyectos es hacer lo siguiente:
+    - python manage.py migrate (para crear la base de datos)
+    - python manage.py makemigrations
+
+Ahora nos pide crear un usuario administrador, y para eso hacemos:
+    - python manage.py createsuperuser
+    - Nos pedirá un user, email y password. En mi caso he puesto:
+        -User: admin
+        -Email: admin@admin.com
+        -Password: 1234
+
+Ejecutamos el servidor web de desarrollo: python manage.py runserver
+Entramos en la zona de administración añadiendo: \admin
+Ahora que estamos dentro de la zona de administración podemos añadir 2 preguntas con posibles respuestas pulsando
++Add en el apartado de Questions.
+
+Comprobamos que la aplicación está funcionando añadiendo a la url: \polls
+
+He añadido varias capturas que muestran que funciona.
