@@ -35,4 +35,4 @@ Ahora que estamos dentro de la zona de administración podemos añadir 2 pregunt
 
 Comprobamos que la aplicación está funcionando añadiendo a la url: \polls
 
-He añadido varias capturas que muestran que funciona.
+He añadido varias capturas que muestran que funciona
