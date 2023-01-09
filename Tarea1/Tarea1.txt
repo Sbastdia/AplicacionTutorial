@@ -29,7 +29,7 @@ Ahora nos pide crear un usuario administrador, y para eso hacemos:
         -Password: 1234
 
 Ejecutamos el servidor web de desarrollo: python manage.py runserver
-Entramos en la zona de administración añadiendo: \admin
+Entramos en la zona de administración añadiendo: /admin
 Ahora que estamos dentro de la zona de administración podemos añadir 2 preguntas con posibles respuestas pulsando
 +Add en el apartado de Questions.
 
