@@ -1,0 +1,150 @@
+TAREA 2:
+
+-Escribo cómo sería todo aunque no pueda adjuntar captura porquue cuando llego al
+final, no me deja ejecutar por mysqlclient.
+
+-Un VPS (Servidor Virtual Privado) es un tipo de hosting que te proporciona
+una partición privada con recursos dedicados dentro de una servidor que tiene
+múltiples usuarios.
+Recordemos que un servidor es una computadora en la que tu proveedor de alojamiento web
+almacena los archivos y las bases de datos necesarios para tu sitio web. Entonces,
+el alojamiento VPS te proporciona un servidor en la nube que simula un servidor físico,
+pero la máquina se comparte entre varios usuarios. Es tanto virtual como privado porque
+tienes control absoluto, está separado de otros usuarios del servidor a nivel del sistema
+operativo.
+
+-He utilizado un servidor web que es apache2 (el único con el que conseguí avanzar más).
+Para que apache2 pueda servir la aplicación que está escrita en python, usaremos un
+protocolo que nos permite comunicar al servidor web con la aplicación web, de nombre WSGI.
+Es decir, cuando al servidor apache2 le llegue una petición que tenemos que mandar a la
+aplicación web Python, se reenviará dicha petición a un fichero de entrada conocido como
+fichero WSGI, en el que estará nombrada la aplicación. En este caso el fichero
+lo tenemos con el nombre: wsgi.py.
+
+-Procedo a escribir lo que he tenido que instalar:
+
+        -brew install apache2
+        -brew tap homebrew/apache
+        -brew install mod_wsgi
+        -brew install mariadb
+        -mysql.server start
+            -brew services start mariadb
+            -mysql
+        -pip install mysqlclient
+
+-Lo siguiente que hice fue clonar el repositorio y crear un entorono virtual (env) y activarlo.
+También hice: pip install -r requirements.txt
+
+-Entramos en django_tutorial escribiendo: cd django_tutorial
+
+-Instalamos lo siguiente: pip install mysql-connector-python
+
+-Accedemos al servidor mysql: mysql -u sara -p
+    - -u indica el usuario con el que nos vamos a conectar (sara)
+    - -p indica la contraseña, que en este caso no introducimos ninguna.
+
+-Una vez dentro del servidor de bases de datos, creamos una nueva base de datos:
+    -CREATE DATABASE bd_django;
+    -SHOW DATABASES; (para verificar que la base de datos ha sido creada correctamente)
+
+-Necesitamos un usuario que pueda acceder a esta vase de datos.
+En este caso vamos a crear un usuario de nombre "usuario" que tenga permitido el acceso desde
+localhost y cuya contraseña sea "usuario". Para ello escribiremos el comando: CREATE USER 'usuario'@'localhost' IDENTIFIED BY 'usuario';
+
+-Todavía no tiene permisos sobre la base de datos, por lo que debemos otorgarle dichos privilegios.
+Para eso ejecutamos: GRANT ALL PRIVILEGES ON bd_django.* TO 'usuario'@'localhost';
+
+-Ya podemos salir de mysql: quit
+
+-Modificamos la configuración de la base de datos en el archivo settings.py para
+trabajar con mysql:
+
+    DATABASES = {
+      'default': {
+          'ENGINE': 'django.db.backends.mysql',
+          'NAME': 'myproject',
+          'USER': 'myprojectuser',
+          'PASSWORD': 'password',
+          'HOST': 'localhost',
+          'PORT': '',
+      }
+  }
+
+
+-Ahora como en la Tarea1, hacemos lo siguiente:
+    -python manage.py migrate
+
+-Comprobamos que se han creado la base de datos y las tablas:
+    -mysql -u sara -p
+    -USE bd_django;
+    -SHOW TABLES;
+
+-Creamos un usuario administrador:
+    -python manage.py createsuperuser
+        (username: admin, email: admin@admin.com, password:1234)
+
+-Ya está todo listo para crear el correspondiente fichero de configuración
+para el VirtualHost que será utilizado para la aplicación web(django).
+Por tanto, generaremos un fichero de nombre django.conf dentro de /etc/apache2/sites-available/
+con el siguiente contenido:
+    -nano /etc/apache2/sites-available/django.conf
+    Donde:
+        -ServerName: indicamos el nombre de dominio a través del cual accederemos
+        al servidor web, que tendrá que coincidir con aquel especificado en: ALLOWED_HOSTS.
+        En este caso, www.saradjango.com
+        -DocumentRoot: Directorio en el que se encuentran contenidos los ficheros de la aplicación web.
+         Realmente, el servidor web siempre va a llamar al fichero WSGI, pero es necesario indicarlo
+         por si hay contenido estático a servir: /srv/django_tutorial.
+        -WSGIDaemonProcess: Se define un grupo de procesos que se van a encargar de ejecutar la
+         aplicación (servidor de aplicaciones). A dicho grupo se le asigna un nombre, en este caso
+         flask_temp y un usuario (user) y grupo (group) a utilizar
+        -WSGIScriptAlias: Nos permite indicar la ruta del programa que se va a ejecutar.
+        -Alias: Establecemos un Alias para poder servir el contenido estático de la aplicación web.
+        -Directory: Nos permite asignar el grupo de procesos creado anteriormente de nombre
+         flask_temp al directorio en el que se encuentra contenida nuestra aplicación.
+
+
+-Habilitamos el nuevo VirtualHost:
+    -sudo pico /etc/hosts
+        -Añadimos la siguiente línea al final: 127.0.0.1 misitio.com
+    -Después abrimos y añadimos:
+        <VirtualHost *:80>
+        ServerName misitio.com
+        DocumentRoot «/Applications/MAMP/htdocs/misitio/»
+        </VirtualHost>
+    -Para activarlo: launchctl reload apache2
+
+
+-En este caso, las aplicaciones que necesitan servir contenido estático son admin y polls,
+ por lo que crearemos subdirectorios con dichos nombres, haciendo para ello uso del comando:
+        -mkdir -p static/{admin,polls}
+
+
+-Para verificar que la generación de dichos directorios se ha llevado a cabo correctamente:
+        -tree static/
+
+
+-Nos quedaría introducir el contenido necesario a servir:
+        -cp -r /home/debian/despliegue/lib/python3.7/site-packages/django/contrib/admin/static/admin/* static/admin/
+        -cp -r polls/static/polls/* static/polls/
+
+-Volvemos a cargar la configuración de apache2 en memoria para que así surtan efecto los
+ nuevos cambios realizados, entre los que se encuentran el nuevo VirtualHost que hemos generado.
+ Para ello, haremos uso del comando:
+        -launchctl reload apache2
+
+
+-Volveremos a la máquina anfitriona y configuraremos la resolución estática de nombres en la misma:
+        -sudo nano /etc/hosts
+        -Añadimos:
+            ::1     localhost ip6-localhost ip6-loopback
+            ff02::1 ip6-allnodes
+            ff02::2 ip6-allrouters
+
+
+-Accedemos al navegador y entramos en admin (/admin)
+
+
+-Desactivamos en la configuración el modo debug a False. Para que los errores de ejecución
+ no den información sensible de la aplicación.
+

@@ -1,0 +1,34 @@
+Tarea 3:
+
+-Primero nos pide que modifiquemos la página inicial donde se ven las
+encuestas para que aparezca nuestro nombre y eso se hace añadiendo:
+        -<h2>Sara Bastida Díaz</h2>
+
+-Después que modifiquemos la imagen de fondo y para eso me descargué
+otra imagen de internet y le puse el nombre: background.jpg, y la añadí
+en: polls/static/polls/images/
+
+-Creamos una nueva tabla de base de datos modificando model.py:
+        class Categoria(models.Model):
+            Abr = models.CharField(max_length=4)
+            Nombre = models.CharField(max_length=50)
+
+            def __str__(self):
+                return self.Abr+" - "+self.Nombre
+
+-Hacemos:
+        -python manage.py migrate
+        -python manage.py makemigrations
+
+-Añadimos el nuevo modelo al sitio de administración de django en polls/admin.py:
+        -from .models import Choice, Question, Categoria
+        -admin.site.register(Categoria) (lo añadimos al final)
+
+-Por último para ver que todo funciona: python manage.py runserver
+
+
+
+
+
+
+

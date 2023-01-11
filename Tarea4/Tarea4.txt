@@ -1,0 +1,17 @@
+Tarea 4:
+
+-Para esta tarea, usaríamos lo que se llama: firebase
+
+-Firebase nos ofrece una gran variedad de servicios y funcionalidades
+para implementar en nuestras aplicaciones, las cuales abarcan desde el desarrrollo
+hasta la implementación y el crecimiento de nuestras aplicaciones.
+
+-Se puede usar el sistema de autenticación de Firebase como proveedor de identidad
+ de nuestra API REST usando Django Rest Framework.
+
+
+
+
+-Otra opción es hacerlo con Github Pages. Entonces, tendremos un archivo .yml
+-Docker-compose.yml es un fichero o archivo de configuración disponible para la herramienta
+de ejecución y definición de aplicaciones en contenedores denominada Docker Compose.
